@@ -24,8 +24,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  /* overflow-y: scroll; */
   position: relative;
 }
 
@@ -119,6 +117,13 @@ body {
   transition-duration: 600ms;
   opacity: 0;
 }
+.country-container {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out,
+    visibility 0.25s ease-in-out;
+  will-change: transform;
+}
 .country {
   background-color: #fff;
   box-shadow: 0 2rem 5rem 1rem rgba(0, 0, 0, 0.1);
@@ -126,6 +131,7 @@ body {
   width: 30rem;
   border-radius: 0.7rem;
 }
+
 .neighbour-wrapper {
   width: 100%;
   height: 48rem;
@@ -153,10 +159,14 @@ body {
   color: #888;
 }
 .neighbour-container {
-  display: flex;
+  display: none;
   overflow-y: hidden;
   overflow-x: scroll;
   height: 100%;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out,
+    visibility 0.25s ease-in-out;
+  will-change: transform;
 }
 
 .country__img {
@@ -219,4 +229,8 @@ body {
   margin: 2rem;
   border: 3rem solid white;
   box-shadow: 0 2rem 5rem 1rem rgba(0, 0, 0, 0.1);
+}
+.show {
+  display: flex;
+  opacity: 1;
 }
