@@ -2,22 +2,21 @@
 
 const btnShowNeighbours = document.querySelector(".btn-show-neighbours");
 const btnFindMe = document.querySelector(".btn-findMe");
+const btnErase = document.querySelector(".btn-erase");
 const searchCountryForm = document.querySelector(".search-bar");
-const searchCountryInput = document
-  .querySelector(".search-input")
-  .value.toString()
-  .toLowerCase();
+const searchCountryInput = document.querySelector(".search-input");
 const container = document.querySelector(".container");
 const neighbourContainer = document.querySelector(".neighbour-container");
 const countryContainer = document.querySelector(".country-container");
+const body = document.querySelector(".body");
+const neighbourWrapper = document.querySelector(".neighbour-wrapper");
 
 ///////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// FUNCTIONS ///////////////////////////////
 
 const renderError = function (msg) {
-  container.insertAdjacentText("afterbegin", msg);
-  container.style.opacity = 1;
+  body.insertAdjacentText("beforeend", msg);
 };
 
 const getPosition = function () {
@@ -25,6 +24,16 @@ const getPosition = function () {
     navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
+
+const hideContainer = function () {
+  container.style.opacity = 0;
+  container.style.display = "none";
+};
+const showContainer = function () {
+  container.style.opacity = 1;
+  container.style.display = "flex";
+};
+hideContainer();
 
 const renderCountry = function (data) {
   const html = `
@@ -109,14 +118,10 @@ const whereAmI = async function () {
 };
 whereAmI();
 
-searchCountryForm.addEventListener("submit", async function (e) {
-  container.innerHTML = "";
-  e.preventDefault();
+const searchCountry = async function (country) {
   try {
-    const res = await fetch(
-      `https://restcountries.com/v2/name/${searchCountryInput}`
-    );
-    if (!res.ok) throw new Error("Problem getting country");
+    const res = await fetch(`https://restcountries.com/v2/name/${country}`);
+    if (!res.ok) throw new Error("Problem getting searched country");
     console.log(res);
     const data = await res.json();
     console.log(data);
@@ -135,13 +140,30 @@ searchCountryForm.addEventListener("submit", async function (e) {
     console.error(`${err}⛔`);
     renderError(`${err.message}⛔ Try reloading!`);
   }
-});
+};
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// EVENT LISTENERS ///////////////////////////////
 btnFindMe.addEventListener("click", function () {
+  showContainer();
   countryContainer.classList.toggle("show");
 });
 
 btnShowNeighbours.addEventListener("click", function () {
+  neighbourWrapper.style.height = Number.parseInt("48rem", 10);
   neighbourContainer.classList.toggle("show");
 });
+
+searchCountryForm.addEventListener("submit", function (e) {
+  countryContainer.innerHTML = "";
+  neighbourContainer.innerHTML = "";
+  showContainer();
+  e.preventDefault();
+  console.log(searchCountryInput.value);
+  searchCountry(searchCountryInput.value);
+  searchCountryInput.value = "";
+});
+
+// btnErase.addEventListener("click", function () {
+//   countryContainer.innerHTML = "";
+//   neighbourContainer.innerHTML = "";
+// });
