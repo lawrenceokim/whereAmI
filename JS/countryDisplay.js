@@ -1,7 +1,7 @@
 "use strict";
 
 const btnShowNeighbours = document.querySelector(".btn-show-neighbours");
-const btnFindMe = document.querySelector(".btn-findMe");
+const btnStatus = document.querySelector(".btn-status");
 const btnErase = document.querySelector(".btn-erase");
 const searchCountryForm = document.querySelector(".search-bar");
 const searchCountryInput = document.querySelector(".search-input");
@@ -10,6 +10,8 @@ const neighbourContainer = document.querySelector(".neighbour-container");
 const countryContainer = document.querySelector(".country-container");
 const body = document.querySelector(".body");
 const neighbourWrapper = document.querySelector(".neighbour-wrapper");
+const countryDot = document.querySelector(".country-dot");
+const neighbourDotCounter = document.querySelector(".neighbour-counter");
 
 ///////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -33,7 +35,6 @@ const showContainer = function () {
   container.style.opacity = 1;
   container.style.display = "flex";
 };
-hideContainer();
 
 const renderCountry = function (data) {
   const html = `
@@ -82,38 +83,35 @@ const getJSON = function (url, errorMsg = "Something went wrong") {
 const whereAmI = async function () {
   try {
     const pos = await getPosition();
-    console.log(pos);
     const { latitude: lat, longitude: lng } = pos.coords;
-    console.log(lat, lng);
     const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
     if (!resGeo.ok) throw new Error("Problem getting location data");
-    console.log(resGeo);
     const dataGeo = await resGeo.json();
-    console.log(dataGeo);
     const res = await fetch(
       `https://restcountries.com/v2/name/${dataGeo.country}`
     );
+    if (!res.ok) btnStatus.style.background = "#a91d1d";
+    if (!res.ok) btnStatus.textContent = "Error";
+    if (res.ok) btnStatus.style.background = "#29a91d";
+    if (res.ok) btnStatus.textContent = "Good";
     if (!res.ok) throw new Error("Problem getting country");
-    console.log(res);
+
     const data = await res.json();
-    console.log(data);
 
     renderCountry(data[0]);
-    countryContainer.classList.toggle("show");
     const [...border] = data[0].borders;
     if (!border) throw new Error("Neighbouring Country not found");
-    console.log(border);
+    neighbourDotCounter.textContent = border.length;
     border.forEach(async (borders) => {
       const res2 = await fetch(`https://restcountries.com/v2/alpha/${borders}`);
-      if (!res.ok) throw new Error("Problem getting neighbour");
+      if (!res2.ok) throw new Error("Problem getting neighbour");
       const data2 = await res2.json();
-      console.log(data2);
 
       renderNeighbour(data2);
     });
   } catch (err) {
     console.error(`${err}⛔`);
-    renderError(`${err.message}⛔ Try reloading!`);
+    // renderError(`${err.message}⛔ Try reloading!`);
   }
 };
 whereAmI();
@@ -122,32 +120,24 @@ const searchCountry = async function (country) {
   try {
     const res = await fetch(`https://restcountries.com/v2/name/${country}`);
     if (!res.ok) throw new Error("Problem getting searched country");
-    console.log(res);
     const data = await res.json();
-    console.log(data);
     renderCountry(data[0]);
     const [...border] = data[0].borders;
     if (!border) throw new Error("Neighbouring Country not found");
-    console.log(border);
+    neighbourDotCounter.textContent = border.length;
     border.forEach(async (borders) => {
       const res2 = await fetch(`https://restcountries.com/v2/alpha/${borders}`);
-      if (!res.ok) throw new Error("Problem getting neighbour");
+      if (!res2.ok) throw new Error("Problem getting neighbour");
       const data2 = await res2.json();
-      console.log(data2);
       renderNeighbour(data2);
     });
   } catch (err) {
     console.error(`${err}⛔`);
-    renderError(`${err.message}⛔ Try reloading!`);
+    // renderError(`${err.message}⛔ Try reloading!`);
   }
 };
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// EVENT LISTENERS ///////////////////////////////
-btnFindMe.addEventListener("click", function () {
-  showContainer();
-  countryContainer.classList.toggle("show");
-});
-
 btnShowNeighbours.addEventListener("click", function () {
   neighbourWrapper.style.height = Number.parseInt("48rem", 10);
   neighbourContainer.classList.toggle("show");
@@ -158,7 +148,6 @@ searchCountryForm.addEventListener("submit", function (e) {
   neighbourContainer.innerHTML = "";
   showContainer();
   e.preventDefault();
-  console.log(searchCountryInput.value);
   searchCountry(searchCountryInput.value);
   searchCountryInput.value = "";
 });
@@ -167,3 +156,14 @@ searchCountryForm.addEventListener("submit", function (e) {
 //   countryContainer.innerHTML = "";
 //   neighbourContainer.innerHTML = "";
 // });
+
+/*
+ATTENTION
+1. display error message seperately.
+2. neighbours button to display number of neighbours ontop of it.
+3. my country button to display green dot at top of it if country is ready and red if not.
+4. seperate the code that gets myCountry data so you can always click on it to see current user's country any time.
+5. show country after searching then toggle display when country button is clicked.
+6. if no neighbour, error message to be displayed in neighbour space.
+7. remove previous error message before displaying new one
+*/
