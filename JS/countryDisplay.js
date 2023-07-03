@@ -61,8 +61,6 @@ if (window.screen.width >= 630) {
       countryContainer.style.background = "#f7f7f7";
       neighbourWrapper.style.width = 0;
       errorMsg.innerHTML = "";
-    } else {
-      neighbourWrapper.style.width = "100%";
     }
   };
 
@@ -165,6 +163,7 @@ if (window.screen.width >= 630) {
       if (!border) throw new Error("Neighbouring Country not found");
       neighbourDotCounter.textContent = border.length;
       if (border) {
+        neighbourWrapper.style.width = "100%";
         border.forEach(async (borders) => {
           const res2 = await fetch(
             `https://restcountries.com/v2/alpha/${borders}`
@@ -178,6 +177,11 @@ if (window.screen.width >= 630) {
       console.error(`${err}`);
       renderError(`${err.message}😰 Try reloading!`);
       displayNeighbourErrorConditions(err);
+      if (
+        !err.message ===
+        "undefined is not iterable (cannot read property Symbol(Symbol.iterator))"
+      )
+        neighbourWrapper.style.width = "100%";
     }
   };
   ////////////////////////////////////////////////////////////////////////
@@ -191,7 +195,6 @@ if (window.screen.width >= 630) {
     neighbourDotCounter.textContent = "?";
     countryContainer.innerHTML = "";
     neighbourContainer.innerHTML = "";
-    neighbourContainer.classList.add("show");
     showContainer();
     e.preventDefault();
     searchCountry(searchCountryInput.value);
@@ -203,18 +206,16 @@ if (window.screen.width >= 630) {
   body.innerHTML = "Sorry, available only on wider screen sizes🥲";
 }
 
-// btnErase.addEventListener("click", function () {
-//   countryContainer.innerHTML = "";
-//   neighbourContainer.innerHTML = "";
-// });
-
+ATTENTION;
+TODO;
+BUG;
 /*
-ATTENTION
 1. display error message seperately.✅
 2. neighbours button to display number of neighbours ontop of it.✅
 3. my country button to display green dot at top of it if country is ready and red if not.✅
 4. seperate the code that gets myCountry data so you can always click on it to see current user's country any time.
 5. show country after searching then toggle display when country button is clicked.✅
-6. if no neighbour, error message to be displayed in neighbour space.
+6. if no neighbour, error message to be displayed in info space.
 7. remove previous error message before displaying new one✅
+8. Display info div on mouseon; showing error message, what the different colours mean.
 */
